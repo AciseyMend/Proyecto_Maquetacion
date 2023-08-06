@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Géneros</title>
+</head>
+<body>
+    <table id="tablaGeneros">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Los géneros se cargarán aquí -->
+        </tbody>
+    </table>
+
+    <script>
+        async function cargarGeneros() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/genres');
+                const generos = await response.json();
+                const tabla = document.getElementById('tablaGeneros').getElementsByTagName('tbody')[0];
+                tabla.innerHTML = ""; // Limpiar la tabla antes de agregar los datos
+
+                generos.forEach(genero => {
+                    const fila = tabla.insertRow();
+                    const celdaId = fila.insertCell(0);
+                    const celdaNombre = fila.insertCell(1);
+                    const celdaAcciones = fila.insertCell(2);
+
+                    celdaId.innerHTML = genero.id;
+                    celdaNombre.innerHTML = genero.name;
+
+                    const btnEditar = document.createElement('button');
+                    btnEditar.textContent = 'Editar';
+                    celdaAcciones.appendChild(btnEditar);
+
+                    const btnEliminar = document.createElement('button');
+                    btnEliminar.textContent = 'Eliminar';
+                    celdaAcciones.appendChild(btnEliminar);
+                });
+            } catch (error) {
+                console.error('Error al cargar géneros:', error);
+            }
+        }
+
+        // Llamar a la función cuando se carga el documento
+        document.addEventListener("DOMContentLoaded", cargarGeneros);
+    </script>
+</body>
+</html>
