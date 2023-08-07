@@ -47,6 +47,9 @@
 
                     const btnEliminar = document.createElement('button');
                     btnEliminar.textContent = 'Eliminar';
+                    btnEliminar.onclick = function() {
+                        eliminarGenero(genero.id, fila);
+                    }
                     celdaAcciones.appendChild(btnEliminar);
                 });
             } catch (error) {
@@ -57,15 +60,26 @@
         function editarGenero(id, celdaNombre) {
             const nuevoNombre = prompt("Ingrese el nuevo nombre del género:");
             if (nuevoNombre !== null) {
-                // Aquí puedes hacer una llamada a tu API para actualizar el género en la base de datos
                 fetch(`http://127.0.0.1:8000/api/genres/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: nuevoNombre })
                 }).then(() => {
-                    celdaNombre.innerHTML = nuevoNombre; // Actualiza el nombre en la tabla
+                    celdaNombre.innerHTML = nuevoNombre;
                 }).catch(error => {
                     console.error('Error al editar el género:', error);
+                });
+            }
+        }
+
+        function eliminarGenero(id, fila) {
+            if (confirm("¿Está seguro de que desea eliminar este género?")) {
+                fetch(`http://127.0.0.1:8000/api/genres/${id}`, {
+                    method: 'DELETE',
+                }).then(() => {
+                    fila.remove(); // Elimina la fila de la tabla
+                }).catch(error => {
+                    console.error('Error al eliminar el género:', error);
                 });
             }
         }
