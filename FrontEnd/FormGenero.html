@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Géneros</title>
+</head>
+<body>
+    <button onclick="crearGenero()">Crear Géneros</button>
+
+    <table id="tablaGeneros">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Los géneros se cargarán aquí -->
+        </tbody>
+    </table>
+
+    <script>
+        async function cargarGeneros() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/genres');
+                const generos = await response.json();
+                const tabla = document.getElementById('tablaGeneros').getElementsByTagName('tbody')[0];
+                tabla.innerHTML = ""; // Limpiar la tabla antes de agregar los datos
+
+                generos.forEach(genero => {
+                    const fila = tabla.insertRow();
+                    const celdaId = fila.insertCell(0);
+                    const celdaNombre = fila.insertCell(1);
+                    const celdaAcciones = fila.insertCell(2);
+
+                    celdaId.innerHTML = genero.id;
+                    celdaNombre.innerHTML = genero.name;
+
+                    const btnEditar = document.createElement('button');
+                    btnEditar.textContent = 'Editar';
+                    btnEditar.onclick = function() {
+                        editarGenero(genero.id, celdaNombre);
+                    }
+                    celdaAcciones.appendChild(btnEditar);
+
+                    const btnEliminar = document.createElement('button');
+                    btnEliminar.textContent = 'Eliminar';
+                    celdaAcciones.appendChild(btnEliminar);
+                });
+            } catch (error) {
+                console.error('Error al cargar géneros:', error);
+            }
+        }
+
+        function editarGenero(id, celdaNombre) {
+            const nuevoNombre = prompt("Ingrese el nuevo nombre del género:");
+            if (nuevoNombre !== null) {
+                // Aquí puedes hacer una llamada a tu API para actualizar el género en la base de datos
+                fetch(`http://127.0.0.1:8000/api/genres/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: nuevoNombre })
+                }).then(() => {
+                    celdaNombre.innerHTML = nuevoNombre; // Actualiza el nombre en la tabla
+                }).catch(error => {
+                    console.error('Error al editar el género:', error);
+                });
+            }
+        }
+
+        function crearGenero() {
+            // Redirigir al usuario a la página del formulario para crear un género
+            window.location.href = './Generos.html';
+        }
+
+        // Llamar a la función cuando se carga el documento
+        document.addEventListener("DOMContentLoaded", cargarGeneros);
+    </script>
+</body>
+</html>

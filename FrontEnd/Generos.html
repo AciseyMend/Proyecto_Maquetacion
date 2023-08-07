@@ -1,0 +1,50 @@
+<!-- Generos.html -->
+<!doctype html>
+<html lang="es">
+<head>
+  <!-- ... Resto del código ... -->
+</head>
+<body class="contactBody">   
+    <div class="wrapper">
+        <form class="form" id="formGenero">
+            <h1>Géneros musicales</h1>
+            <h2>Nombre del género:</h2>
+            <input type="text" class="name" id="inputGenero" placeholder="Nombre del genero"/>
+            <div class="buttons">
+                <button type="button" class="submit entry" onclick="guardarGenero()">Guardar</button>
+                <button type="button" class="delete entry" onclick="Borrado()">Borrar</button>
+            </div>
+        </form>
+        <div class="shadow"></div>
+    </div>
+
+    <script>
+        function guardarGenero() {
+            const nombreGenero = document.getElementById('inputGenero').value;
+
+            // Hacer una solicitud POST para crear el nuevo género
+            fetch('http://127.0.0.1:8000/api/genres', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: nombreGenero })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Género creado exitosamente!');
+                document.getElementById('inputGenero').value = ''; // Limpiar el input
+                window.location.href = './FormGenero.html'; // Redirigir a la página de prueba
+            })
+            .catch(error => {
+                alert('Error al crear género.');
+                console.error('Error al crear género:', error);
+            });
+        }
+
+        function Borrado() {
+            document.getElementById('inputGenero').value = ''; // Limpiar el input
+        }
+    </script>
+</body>
+</html>
