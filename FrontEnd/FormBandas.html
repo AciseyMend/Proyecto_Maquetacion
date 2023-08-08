@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bandas</title>
+</head>
+<body>
+    <button onclick="crearBanda()">Crear Banda</button>
+
+    <table id="tablaBandas">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Género</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Las bandas se cargarán aquí -->
+        </tbody>
+    </table>
+
+    <script>
+        async function cargarBandas() {
+            try {
+                const responseBandas = await fetch('http://127.0.0.1:8000/api/bands');
+                const bandas = await responseBandas.json();
+                
+                const responseGeneros = await fetch('http://127.0.0.1:8000/api/genres');
+                const generos = await responseGeneros.json();
+
+                const tabla = document.getElementById('tablaBandas').getElementsByTagName('tbody')[0];
+                tabla.innerHTML = ""; // Limpiar la tabla antes de agregar los datos
+
+                bandas.forEach(banda => {
+                    const genero = generos.find(g => g.id === banda.genre_id);
+
+                    const fila = tabla.insertRow();
+                    const celdaId = fila.insertCell(0);
+                    const celdaNombre = fila.insertCell(1);
+                    const celdaGenero = fila.insertCell(2);
+                    const celdaAcciones = fila.insertCell(3);
+
+                    celdaId.innerHTML = banda.id;
+                    celdaNombre.innerHTML = banda.name;
+                    celdaGenero.innerHTML = genero ? genero.name : "No definido";
+
+                    const btnEditar = document.createElement('button');
+                    btnEditar.textContent = 'Editar';
+                    btnEditar.onclick = function() {
+                        editarBanda(banda.id, celdaNombre, celdaGenero);
+                    }
+                    celdaAcciones.appendChild(btnEditar);
+
+                    const btnEliminar = document.createElement('button');
+                    btnEliminar.textContent = 'Eliminar';
+                    btnEliminar.onclick = function() {
+                        eliminarBanda(banda.id, fila);
+                    }
+                    celdaAcciones.appendChild(btnEliminar);
+                });
+            } catch (error) {
+                console.error('Error al cargar bandas:', error);
+            }
+        }
+
+        function editarBanda(id, celdaNombre, celdaGenero) {
+            const nuevoNombre = prompt("Ingrese el nuevo nombre de la banda:");
+            // Aquí puedes permitir que el usuario edite también el género si lo deseas
+            if (nuevoNombre !== null) {
+                fetch(`http://127.0.0.1:8000/api/bands/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: nuevoNombre })
+                }).then(() => {
+                    celdaNombre.innerHTML = nuevoNombre;
+                    // Actualiza también el género en la tabla si es necesario
+                }).catch(error => {
+                    console.error('Error al editar la banda:', error);
+                });
+            }
+        }
+
+        function eliminarBanda(id, fila) {
+            if (confirm("¿Está seguro de que desea eliminar esta banda?")) {
+                fetch(`http://127.0.0.1:8000/api/bands/${id}`, {
+                    method: 'DELETE',
+                }).then(() => {
+                    fila.remove(); // Elimina la fila de la tabla
+                }).catch(error => {
+                    console.error('Error al eliminar la banda:', error);
+                });
+            }
+        }
+
+        function crearBanda() {
+            // Redirigir al usuario a la página del formulario para crear una banda
+            window.location.href = './Bandas.html'; // Cambia esta URL a la página de creación de bandas
+        }
+
+        // Llamar a la función cuando se carga el documento
+        document.addEventListener("DOMContentLoaded", cargarBandas);
+    </script>
+</body>
+</html>

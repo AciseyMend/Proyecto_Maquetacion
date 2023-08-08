@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Álbumes</title>
+</head>
+<body>
+    <button onclick="crearAlbum()">Crear Álbum</button>
+
+    <table id="tablaAlbums">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Banda</th>
+                <th>Fecha de lanzamiento</th>
+                <th>Lugar</th>
+                <th>Duración</th>
+                <th>Copias vendidas</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Los álbumes se cargarán aquí -->
+        </tbody>
+    </table>
+
+    <script>
+        async function cargarAlbums() {
+            try {
+                const responseAlbums = await fetch('http://127.0.0.1:8000/api/albums');
+                const albums = await responseAlbums.json();
+                
+                const responseBandas = await fetch('http://127.0.0.1:8000/api/bands');
+                const bandas = await responseBandas.json();
+
+                const tabla = document.getElementById('tablaAlbums').getElementsByTagName('tbody')[0];
+                tabla.innerHTML = ""; // Limpiar la tabla antes de agregar los datos
+
+                albums.forEach(album => {
+                    const banda = bandas.find(b => b.id === album.band_id);
+
+                    const fila = tabla.insertRow();
+                    fila.dataset.id = album.id; // Almacenar el ID del álbum en el atributo de datos de la fila
+
+                    const celdaId = fila.insertCell(0);
+                    const celdaNombre = fila.insertCell(1);
+                    celdaNombre.dataset.id = album.id; // Almacenar el ID del álbum en el atributo de datos de la celda
+                    const celdaBanda = fila.insertCell(2);
+                    const celdaFechaLanzamiento = fila.insertCell(3);
+                    const celdaLugar = fila.insertCell(4);
+                    const celdaDuracion = fila.insertCell(5);
+                    const celdaCopiasVendidas = fila.insertCell(6);
+                    const celdaAcciones = fila.insertCell(7);
+
+                    celdaId.innerHTML = album.id;
+                    celdaNombre.innerHTML = album.name;
+                    celdaBanda.innerHTML = banda ? banda.name : "No definido";
+                    celdaFechaLanzamiento.innerHTML = album.release_date;
+                    celdaLugar.innerHTML = album.place;
+                    celdaDuracion.innerHTML = album.duration;
+                    celdaCopiasVendidas.innerHTML = album.copies_sold;
+
+                    celdaAcciones.innerHTML = `
+                        <button onclick="editarAlbum(event)">Editar</button>
+                        <button onclick="eliminarAlbum(event)">Eliminar</button>
+                    `;
+                });
+            } catch (error) {
+                console.error('Error al cargar álbumes:', error);
+            }
+        }
+
+        function editarAlbum(event) {
+            const id = event.target.parentElement.parentElement.dataset.id;
+            const celdaNombre = event.target.parentElement.previousElementSibling;
+
+            const nuevoNombre = prompt("Ingrese el nuevo nombre del álbum:");
+            if (nuevoNombre !== null) {
+                fetch(`http://127.0.0.1:8000/api/albums/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: nuevoNombre })
+                }).then(() => {
+                    celdaNombre.innerHTML = nuevoNombre;
+                    // Actualiza también la banda en la tabla si es necesario
+                }).catch(error => {
+                    console.error('Error al editar el álbum:', error);
+                });
+            }
+        }
+
+        function eliminarAlbum(event) {
+            const id = event.target.parentElement.parentElement.dataset.id;
+            const fila = event.target.parentElement.parentElement;
+
+            if (confirm("¿Está seguro de que desea eliminar este álbum?")) {
+                fetch(`http://127.0.0.1:8000/api/albums/${id}`, {
+                    method: 'DELETE',
+                }).then(() => {
+                    fila.remove(); // Elimina la fila de la tabla
+                }).catch(error => {
+                    console.error('Error al eliminar el álbum:', error);
+                });
+            }
+        }
+
+        function crearAlbum() {
+            // Redirigir al usuario a la página del formulario para crear un álbum
+            window.location.href = './Albums.html'; // Cambia esta URL a la página de creación de álbumes
+        }
+
+        // Llamar a la función cuando se carga el documento
+        document.addEventListener("DOMContentLoaded", cargarAlbums);
+    </script>
+</body>
+</html>

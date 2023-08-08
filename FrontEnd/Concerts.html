@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conciertos</title>
+  <!-- ... Resto del código ... -->
+</head>
+<body class="contactBody">   
+    <div class="wrapper">
+        <form class="form" id="formConcierto">
+            <h1>Conciertos</h1>
+            <h2>Nombre del concierto:</h2>
+            <input type="text" class="name" id="inputConcierto" placeholder="Nombre del concierto"/>
+            <h2>Banda:</h2>
+            <select id="selectBanda">
+                <!-- Las opciones de bandas se cargarán aquí -->
+            </select>
+            <h2>Fecha del concierto:</h2>
+            <input type="date" id="inputFecha" />
+            <h2>Lugar del concierto:</h2>
+            <input type="text" id="inputLugar" placeholder="Lugar del concierto"/>
+            <h2>Duración del concierto:</h2>
+            <input type="text" id="inputDuracion" placeholder="Duración del concierto"/>
+            <div class="buttons">
+                <button type="button" class="submit entry" onclick="guardarConcierto()">Guardar</button>
+                <button type="button" class="delete entry" onclick="Borrado()">Borrar</button>
+            </div>
+        </form>
+        <div class="shadow"></div>
+    </div>
+
+    <script>
+        async function cargarBandas() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/bands');
+                const bandas = await response.json();
+                const select = document.getElementById('selectBanda');
+
+                bandas.forEach(banda => {
+                    const option = document.createElement('option');
+                    option.value = banda.id;
+                    option.textContent = banda.name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error al cargar bandas:', error);
+            }
+        }
+
+        function guardarConcierto() {
+            const nombreConcierto = document.getElementById('inputConcierto').value;
+            const idBanda = document.getElementById('selectBanda').value;
+            const fechaConcierto = document.getElementById('inputFecha').value;
+            const lugarConcierto = document.getElementById('inputLugar').value;
+            const duracionConcierto = document.getElementById('inputDuracion').value;
+
+            // Hacer una solicitud POST para crear el nuevo concierto
+            fetch('http://127.0.0.1:8000/api/concerts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: nombreConcierto, band_id: idBanda, date: fechaConcierto, place: lugarConcierto, time: duracionConcierto })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Concierto creado exitosamente!');
+                document.getElementById('inputConcierto').value = '';
+                document.getElementById('selectBanda').value = '';
+                document.getElementById('inputFecha').value = '';
+                document.getElementById('inputLugar').value = '';
+                document.getElementById('inputDuracion').value = ''; // Limpiar los campos
+                // Puedes redirigir a la página que desees aquí
+            })
+            .catch(error => {
+                alert('Error al crear concierto.');
+                console.error('Error al crear concierto:', error);
+            });
+        }
+
+        function Borrado() {
+            document.getElementById('inputConcierto').value = '';
+            document.getElementById('selectBanda').value = '';
+            document.getElementById('inputFecha').value = '';
+            document.getElementById('inputLugar').value = '';
+            document.getElementById('inputDuracion').value = ''; // Limpiar los campos
+        }
+
+        // Llamar a la función para cargar las bandas cuando se carga el documento
+        document.addEventListener("DOMContentLoaded", cargarBandas);
+    </script>
+</body>
+</html>

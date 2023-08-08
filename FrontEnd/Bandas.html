@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bandas musicales</title>
+  <!-- ... Resto del código ... -->
+</head>
+<body class="contactBody">   
+    <div class="wrapper">
+        <form class="form" id="formBanda">
+            <h1>Bandas musicales</h1>
+            <h2>Nombre de la banda:</h2>
+            <input type="text" class="name" id="inputBanda" placeholder="Nombre de la banda"/>
+            <h2>Género musical:</h2>
+            <select id="selectGenero">
+                <!-- Las opciones de géneros se cargarán aquí -->
+            </select>
+            <div class="buttons">
+                <button type="button" class="submit entry" onclick="guardarBanda()">Guardar</button>
+                <button type="button" class="delete entry" onclick="Borrado()">Borrar</button>
+            </div>
+        </form>
+        <div class="shadow"></div>
+    </div>
+
+    <script>
+        async function cargarGeneros() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/genres');
+                const generos = await response.json();
+                const select = document.getElementById('selectGenero');
+
+                generos.forEach(genero => {
+                    const option = document.createElement('option');
+                    option.value = genero.id;
+                    option.textContent = genero.name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error al cargar géneros:', error);
+            }
+        }
+
+        function guardarBanda() {
+            const nombreBanda = document.getElementById('inputBanda').value;
+            const idGenero = document.getElementById('selectGenero').value;
+
+            // Hacer una solicitud POST para crear la nueva banda
+            fetch('http://127.0.0.1:8000/api/bands', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: nombreBanda, genre_id: idGenero })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Banda creada exitosamente!');
+                document.getElementById('inputBanda').value = '';
+                document.getElementById('selectGenero').value = ''; // Limpiar el select
+                // Puedes redirigir a la página que desees aquí
+            })
+            .catch(error => {
+                alert('Error al crear banda.');
+                console.error('Error al crear banda:', error);
+            });
+        }
+
+        function Borrado() {
+            document.getElementById('inputBanda').value = '';
+            document.getElementById('selectGenero').value = ''; // Limpiar el select
+        }
+
+        // Llamar a la función para cargar los géneros cuando se carga el documento
+        document.addEventListener("DOMContentLoaded", cargarGeneros);
+    </script>
+</body>
+</html>

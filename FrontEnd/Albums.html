@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Álbum</title>
+</head>
+<body>   
+    <div class="wrapper">
+        <form class="form" id="formAlbum">
+            <h1>Crear Álbum</h1>
+            <h2>Nombre del álbum:</h2>
+            <input type="text" id="inputAlbum" placeholder="Nombre del álbum"/>
+            <h2>Banda:</h2>
+            <select id="selectBanda">
+                <!-- Las opciones de bandas se cargarán aquí -->
+            </select>
+            <h2>Fecha de lanzamiento:</h2>
+            <input type="date" id="inputFechaLanzamiento"/>
+            <h2>Lugar de lanzamiento:</h2>
+            <input type="text" id="inputLugar" placeholder="Lugar de lanzamiento"/>
+            <h2>Duración:</h2>
+            <input type="number" id="inputDuracion" step="0.01" placeholder="Duración"/>
+            <h2>Copias vendidas:</h2>
+            <input type="number" id="inputCopiasVendidas" placeholder="Copias vendidas"/>
+            <div class="buttons">
+                <button type="button" class="submit entry" onclick="guardarAlbum()">Guardar</button>
+                <button type="button" class="delete entry" onclick="Borrado()">Borrar</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        async function cargarBandas() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/bands');
+                const bandas = await response.json();
+                const select = document.getElementById('selectBanda');
+
+                bandas.forEach(banda => {
+                    const option = document.createElement('option');
+                    option.value = banda.id;
+                    option.textContent = banda.name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error al cargar bandas:', error);
+            }
+        }
+
+        function guardarAlbum() {
+            const nombreAlbum = document.getElementById('inputAlbum').value;
+            const idBanda = document.getElementById('selectBanda').value;
+            const fechaLanzamiento = document.getElementById('inputFechaLanzamiento').value;
+            const lugar = document.getElementById('inputLugar').value;
+            const duracion = document.getElementById('inputDuracion').value;
+            const copiasVendidas = document.getElementById('inputCopiasVendidas').value;
+
+            // Hacer una solicitud POST para crear el nuevo álbum
+            fetch('http://127.0.0.1:8000/api/albums', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: nombreAlbum,
+                    band_id: idBanda,
+                    release_date: fechaLanzamiento,
+                    place: lugar,
+                    duration: duracion,
+                    copies_sold: copiasVendidas
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Álbum creado exitosamente!');
+                document.getElementById('formAlbum').reset();  // Limpiar el formulario
+            })
+            .catch(error => {
+                alert('Error al crear álbum.');
+                console.error('Error al crear álbum:', error);
+            });
+        }
+
+        function Borrado() {
+            document.getElementById('formAlbum').reset();  // Limpiar el formulario
+        }
+
+        // Llamar a la función para cargar las bandas cuando se carga el documento
+        document.addEventListener("DOMContentLoaded", cargarBandas);
+    </script>
+</body>
+</html>

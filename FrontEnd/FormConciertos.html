@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conciertos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <section>
+            <header class="botones_prev_next">
+                <span onclick="crearConcierto()" class="btn_prev">Crear Concierto</span>
+            </header>
+            <div class="contenedor_contenido">
+                <table id="tablaConciertos" class="generos">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Banda</th>
+                            <th>Fecha</th>
+                            <th>Lugar</th>
+                            <th>Tiempo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los conciertos se cargarán aquí -->
+                    </tbody>
+                </table>
+
+    <script>
+        async function cargarConciertos() {
+            try {
+                const responseConciertos = await fetch('http://127.0.0.1:8000/api/concerts');
+                const conciertos = await responseConciertos.json();
+                
+                const responseBandas = await fetch('http://127.0.0.1:8000/api/bands');
+                const bandas = await responseBandas.json();
+
+                const tabla = document.getElementById('tablaConciertos').getElementsByTagName('tbody')[0];
+                tabla.innerHTML = ""; // Limpiar la tabla antes de agregar los datos
+
+                conciertos.forEach(concierto => {
+                    const banda = bandas.find(b => b.id === concierto.band_id);
+
+                    const fila = tabla.insertRow();
+                    fila.dataset.id = concierto.id; 
+
+                    const celdaId = fila.insertCell(0);
+                    const celdaNombre = fila.insertCell(1);
+                    celdaNombre.dataset.id = concierto.id;
+                    const celdaBanda = fila.insertCell(2);
+                    const celdaFecha = fila.insertCell(3);
+                    const celdaLugar = fila.insertCell(4);
+                    const celdaTiempo = fila.insertCell(5);
+                    const celdaAcciones = fila.insertCell(6);
+
+                    celdaId.innerHTML = concierto.id;
+                    celdaNombre.innerHTML = concierto.name;
+                    celdaBanda.innerHTML = banda ? banda.name : "No definido";
+                    celdaFecha.innerHTML = concierto.date;
+                    celdaLugar.innerHTML = concierto.place;
+                    celdaTiempo.innerHTML = concierto.time;
+
+                    celdaAcciones.innerHTML = `
+                        <button onclick="editarConcierto(event)">Editar</button>
+                        <button onclick="eliminarConcierto(event)">Eliminar</button>
+                    `;
+                });
+            } catch (error) {
+                console.error('Error al cargar conciertos:', error);
+            }
+        }
+
+        function editarConcierto(event) {
+            const id = event.target.parentElement.parentElement.dataset.id;
+            const celdaNombre = event.target.parentElement.previousElementSibling.previousElementSibling.previousElementSibling;
+
+            const nuevoNombre = prompt("Ingrese el nuevo nombre del concierto:");
+            if (nuevoNombre !== null) {
+                fetch(`http://127.0.0.1:8000/api/concerts/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: nuevoNombre })
+                }).then(() => {
+                    celdaNombre.innerHTML = nuevoNombre;
+                }).catch(error => {
+                    console.error('Error al editar el concierto:', error);
+                });
+            }
+        }
+
+        function eliminarConcierto(event) {
+            const id = event.target.parentElement.parentElement.dataset.id;
+            const fila = event.target.parentElement.parentElement;
+
+            if (confirm("¿Está seguro de que desea eliminar este concierto?")) {
+                fetch(`http://127.0.0.1:8000/api/concerts/${id}`, {
+                    method: 'DELETE',
+                }).then(() => {
+                    fila.remove(); // Elimina la fila de la tabla
+                }).catch(error => {
+                    console.error('Error al eliminar el concierto:', error);
+                });
+            }
+        }
+
+        function crearConcierto() {
+            // Redirigir al usuario a la página del formulario para crear un concierto
+            window.location.href = './Concerts.html'; // Cambia esta URL a la página de creación de conciertos
+        }
+
+        // Llamar a la función cuando se carga el documento
+        document.addEventListener("DOMContentLoaded", cargarConciertos);
+    </script>
+</body>
+</html>
