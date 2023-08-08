@@ -7,9 +7,9 @@
     <title>Dashboard</title>
 </head>
 <body>
-    <header class="navbar navbar-expand-lg navbar-info bg-info">
+    <header class="navbar navbar-expand-lg bg-secondary">
         <h2>Equipo 5</h2>
-        <nav class="navbar bg-info">
+        <nav class="navbar">
             <div class="container">
                 <a class="navbar-brand" href="FrontEnd/index.html">Inicio</a>
                 <a class="navbar-brand" href="#table">Consulta de Datos</a>
@@ -29,7 +29,7 @@
                         <div id="albumCopiesChart"></div>
                     </div>
                     <div class="card-footer">
-                        <button class="btn btn-success mt-4" id="button_1" onclick="consultarCopiasVendidas()">Consultar</button>
+                        <button class="btn btn-outline-info mt-4" id="button_1" onclick="consultarCopiasVendidas()">Consultar</button>
                     </div>
                 </div>
             </div>
@@ -40,7 +40,7 @@
                         <div id="bandsByGenreChart"></div>
                     </div>
                     <div class="card-footer">
-                        <button class="btn btn-success mt-4" id="button_2" onclick="consultarBandasPorGenero()">Consultar</button>
+                        <button class="btn btn-outline-info mt-4" id="button_2" onclick="consultarBandasPorGenero()">Consultar</button>
                     </div>
                 </div>
             </div>
@@ -54,7 +54,7 @@
                         <div id="bandsByCountryChart"></div>
                     </div>
                     <div class="card-footer">
-                        <button class="btn btn-success mt-4" id="button_3" onclick="consultarBandasPorPais()">Consultar</button>
+                        <button class="btn btn-outline-info mt-4" id="button_3" onclick="consultarBandasPorPais()">Consultar</button>
                     </div>
                 </div>
             </div>
@@ -65,7 +65,7 @@
                         <div id="genreCountChart"></div>
                     </div>
                     <div class="card-footer">
-                        <button class="btn btn-success mt-4" id="button_4" onclick="consultarCantidadGeneros()">Consultar</button>
+                        <button class="btn btn-outline-info mt-4" id="button_4" onclick="consultarCantidadGeneros()">Consultar</button>
                     </div>
                 </div>
             </div>
@@ -79,7 +79,7 @@
                         <div id="concertsByLocationChart"></div>
                     </div>
                     <div class="card-footer">
-                        <button class="btn btn-success mt-4" id="button_5" onclick="consultarConciertosPorLugar()">Consultar</button>
+                        <button class="btn btn-outline-info mt-4" id="button_5" onclick="consultarConciertosPorLugar()">Consultar</button>
                     </div>
                 </div>
             </div>
@@ -90,14 +90,14 @@
                         <div id="albumsByDecadesChart"></div>
                     </div>
                     <div class="card-footer">
-                        <button class="btn btn-success mt-4" id="button_6" onclick="consultarAlbumesPorDecada()">Consultar</button>
+                        <button class="btn btn-outline-info mt-4" id="button_6" onclick="consultarAlbumesPorDecada()">Consultar</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <footer class="footer justify-content-center bg-info mt-4"> 
+    <footer class="footer justify-content-center bg-secondary mt-4"> 
         <div class="container-xxl">
             <p>Derechos Reservados Yesica Mendoza y Lorena Mendoza &copy; 2023</p>
             <p>Contacto: team@example.com</p>
@@ -283,3 +283,32 @@
     </script>
 </body>
 </html>
+
+<style>
+body {
+    background-color: #181818;
+    color: #ffffff;
+    margin: 0;
+}
+
+.wrapper {
+    background-color: #282828;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.shadow {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    opacity: 0;
+    transition: all .5s;
+}
+
+.wrapper:hover .shadow {
+    opacity: 0.2;
+}
+</style>
