@@ -11,7 +11,7 @@
         <h2>Equipo 5</h2>
         <nav class="navbar bg-info">
             <div class="container">
-                <a class="navbar-brand" href="#home">Inicio</a>
+                <a class="navbar-brand" href="FrontEnd/index.html">Inicio</a>
                 <a class="navbar-brand" href="#table">Consulta de Datos</a>
                 <a class="navbar-brand" href="#graphs">Gráficas</a>
                 <a class="navbar-brand" href="#contact">Contacto</a>
@@ -20,7 +20,7 @@
     </header>
     <div class="container mt-5">
         <h1>Dashboard de Música</h1>
-
+    
         <div class="row mt-4">
             <div class="col-md-6">
                 <div id="graficaCopiasVendidas" class="card">
@@ -33,17 +33,74 @@
                     </div>
                 </div>
             </div>
-            <!-- Resto de tu contenido -->
+            <div class="col-md-6">
+                <div id="graficaBandasPorGenero" class="card">
+                    <div class="card-header">Bandas por género</div>
+                    <div class="card-body">
+                        <div id="bandsByGenreChart"></div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-success mt-4" id="button_2" onclick="consultarBandasPorGenero()">Consultar</button>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <!-- Resto de tu contenido -->
-
+    
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div id="graficaBandasPorPais" class="card">
+                    <div class="card-header">Bandas por países</div>
+                    <div class="card-body">
+                        <div id="bandsByCountryChart"></div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-success mt-4" id="button_3" onclick="consultarBandasPorPais()">Consultar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div id="graficaCantidadGeneros" class="card">
+                    <div class="card-header">Cantidad de géneros musicales</div>
+                    <div class="card-body">
+                        <div id="genreCountChart"></div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-success mt-4" id="button_4" onclick="consultarCantidadGeneros()">Consultar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div id="graficaConciertosPorLugar" class="card">
+                    <div class="card-header">Conciertos por lugar</div>
+                    <div class="card-body">
+                        <div id="concertsByLocationChart"></div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-success mt-4" id="button_5" onclick="consultarConciertosPorLugar()">Consultar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div id="graficaAlbumesPorDecada" class="card">
+                    <div class="card-header">Álbumes por décadas</div>
+                    <div class="card-body">
+                        <div id="albumsByDecadesChart"></div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-success mt-4" id="button_6" onclick="consultarAlbumesPorDecada()">Consultar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <footer class="footer justify-content-center bg-info mt-4"> 
         <div class="container-xxl">
-            <p>Derechos Reservados Team5 &copy; 2023</p>
-            <p>Contacto: ejemplo@example.com</p>
+            <p>Derechos Reservados Yesica Mendoza y Lorena Mendoza &copy; 2023</p>
+            <p>Contacto: team@example.com</p>
         </div>
     </footer>
 
@@ -68,6 +125,156 @@
                         yaxis: { title: 'Copias vendidas' },
                     };
                     Plotly.newPlot('albumCopiesChart', [trace], layout);
+                })
+                .catch(error => {
+                    console.error('Hubo un error al obtener los datos:', error);
+                });
+        }
+    
+        function consultarBandasPorGenero() {
+            const url = 'http://127.0.0.1:8000/api/genres'; 
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const genreNames = data.map(item => item.name);
+                    const bandCounts = data.map(item => item.bands_count);
+                    const trace = {
+                        x: genreNames,
+                        y: bandCounts,
+                        type: 'bar',
+                        marker: { color: 'orange' },
+                    };
+                    const layout = {
+                        title: 'Bandas por género',
+                        xaxis: { title: 'Género' },
+                        yaxis: { title: 'Cantidad de Bandas' },
+                    };
+                    Plotly.newPlot('bandsByGenreChart', [trace], layout);
+                })
+                .catch(error => {
+                    console.error('Hubo un error al obtener los datos:', error);
+                });
+        }
+    
+        function consultarBandasPorPais() {
+            const url = 'http://127.0.0.1:8000/api/bands'; 
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const countries = {};
+                    data.forEach(item => {
+                        const country = item.country;
+                        if (countries[country]) {
+                            countries[country]++;
+                        } else {
+                            countries[country] = 1;
+                        }
+                    });
+                    
+                    const countryNames = Object.keys(countries);
+                    const bandCounts = Object.values(countries);
+                    
+                    const trace = {
+                        x: countryNames,
+                        y: bandCounts,
+                        type: 'bar',
+                        marker: { color: 'green' },
+                    };
+                    
+                    const layout = {
+                        title: 'Bandas por países',
+                        xaxis: { title: 'País' },
+                        yaxis: { title: 'Cantidad de Bandas' },
+                    };
+                    
+                    Plotly.newPlot('bandsByCountryChart', [trace], layout);
+                })
+                .catch(error => {
+                    console.error('Hubo un error al obtener los datos:', error);
+                });
+        }
+    
+        function consultarCantidadGeneros() {
+            const url = 'http://127.0.0.1:8000/api/genres'; 
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const genreNames = data.map(item => item.name);
+                    const trace = {
+                        labels: genreNames,
+                        values: genreNames.length,
+                        type: 'pie',
+                        marker: { colors: ['red', 'green', 'blue', 'purple', 'orange'] },
+                    };
+                    const layout = {
+                        title: 'Cantidad de géneros musicales',
+                    };
+                    Plotly.newPlot('genreCountChart', [trace], layout);
+                })
+                .catch(error => {
+                    console.error('Hubo un error al obtener los datos:', error);
+                });
+        }
+    
+        function consultarConciertosPorLugar() {
+            const url = 'http://127.0.0.1:8000/api/concerts'; 
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const locationNames = data.map(item => item.location);
+                    const concertCounts = data.map(item => item.concerts_count);
+                    const trace = {
+                        x: locationNames,
+                        y: concertCounts,
+                        type: 'bar',
+                        marker: { color: 'purple' },
+                    };
+                    const layout = {
+                        title: 'Conciertos por lugar',
+                        xaxis: { title: 'Lugar' },
+                        yaxis: { title: 'Cantidad de Conciertos' },
+                    };
+                    Plotly.newPlot('concertsByLocationChart', [trace], layout);
+                })
+                .catch(error => {
+                    console.error('Hubo un error al obtener los datos:', error);
+                });
+        }
+    
+        function consultarAlbumesPorDecada() {
+            const url = 'http://127.0.0.1:8000/api/albums'; 
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const albumNames = data.map(item => item.name);
+                    const decades = ['70’s', '80’s', '90’s', '00’s', '10’s']; 
+                    const albumsByDecade = new Array(5).fill(0);
+                    data.forEach(item => {
+                        const releaseYear = item.release_year;
+                        if (releaseYear >= 1970 && releaseYear < 1980) {
+                            albumsByDecade[0]++;
+                        } else if (releaseYear >= 1980 && releaseYear < 1990) {
+                            albumsByDecade[1]++;
+                        } else if (releaseYear >= 1990 && releaseYear < 2000) {
+                            albumsByDecade[2]++;
+                        } else if (releaseYear >= 2000 && releaseYear < 2010) {
+                            albumsByDecade[3]++;
+                        } else if (releaseYear >= 2010 && releaseYear < 2020) {
+                            albumsByDecade[4]++;
+                        }
+                    });
+                    const trace = {
+                        x: decades,
+                        y: albumsByDecade,
+                        type: 'bar',
+                        marker: { color: 'pink' },
+                    };
+                    const layout = {
+                        title: 'Álbumes por décadas',
+                        xaxis: { title: 'Década' },
+                        yaxis: { title: 'Cantidad de Álbumes' },
+                    };
+                    Plotly.newPlot('albumsByDecadesChart', [trace], layout);
                 })
                 .catch(error => {
                     console.error('Hubo un error al obtener los datos:', error);
