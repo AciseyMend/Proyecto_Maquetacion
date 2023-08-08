@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <title>Dashboard</title>
+</head>
+<body>
+    <header class="navbar navbar-expand-lg navbar-info bg-info">
+        <h2>Equipo 5</h2>
+        <nav class="navbar bg-info">
+            <div class="container">
+                <a class="navbar-brand" href="#home">Inicio</a>
+                <a class="navbar-brand" href="#table">Consulta de Datos</a>
+                <a class="navbar-brand" href="#graphs">Gráficas</a>
+                <a class="navbar-brand" href="#contact">Contacto</a>
+            </div>
+        </nav>
+    </header>
+    <div class="container mt-5">
+        <h1>Dashboard de Música</h1>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div id="graficaCopiasVendidas" class="card">
+                    <div class="card-header">Cantidad de copias vendidas por cada álbum</div>
+                    <div class="card-body">
+                        <div id="albumCopiesChart"></div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-success mt-4" id="button_1" onclick="consultarCopiasVendidas()">Consultar</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Resto de tu contenido -->
+        </div>
+
+        <!-- Resto de tu contenido -->
+
+    </div>
+
+    <footer class="footer justify-content-center bg-info mt-4"> 
+        <div class="container-xxl">
+            <p>Derechos Reservados Team5 &copy; 2023</p>
+            <p>Contacto: ejemplo@example.com</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+        function consultarCopiasVendidas() {
+            const url = 'http://127.0.0.1:8000/api/albums';
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const nombresAlbums = data.map(item => item.name);
+                    const copiasVendidas = data.map(item => item.copies_sold);
+                    const trace = {
+                        x: nombresAlbums,
+                        y: copiasVendidas,
+                        type: 'bar',
+                        marker: { color: 'blue' },
+                    };
+                    const layout = {
+                        title: 'Cantidad de copias vendidas por cada álbum',
+                        xaxis: { title: 'Álbum' },
+                        yaxis: { title: 'Copias vendidas' },
+                    };
+                    Plotly.newPlot('albumCopiesChart', [trace], layout);
+                })
+                .catch(error => {
+                    console.error('Hubo un error al obtener los datos:', error);
+                });
+        }
+    </script>
+</body>
+</html>
