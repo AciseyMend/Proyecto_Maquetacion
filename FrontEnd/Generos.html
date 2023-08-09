@@ -5,6 +5,21 @@
   <!-- ... Resto del código ... -->
 </head>
 <body class="contactBody">   
+    <div class="container">
+        <aside>
+            <div class="menu">
+                <a class="active" href="./index.html"><span><img src="img/home.svg" alt=""></span>Inicio</a>
+                <a href="#"><span><img src="img/search.svg" alt=""></span>Buscar</a>
+                <a href="#"><span><img src="img/library.svg" alt=""></span>Tu biblioteca</a> <br>
+                <a href="./FormAlbums.html"><span><img src="img/add.svg" alt=""></span>Albunes</a>
+                <a href="./FormBandas.html"><span><img src="img/add.svg" alt=""></span>Bandas</a>
+                <a href="./FormGenero.html"><span><img src="img/add.svg" alt=""></span>Generos</a>
+                <a href="./FormConciertos.html"><span><img src="img/add.svg" alt=""></span>Conciertos</a>
+                <a href="./Dashboard.html"><span><img src="img/heart.svg" alt=""></span>Dashboaard</a>
+            </div>
+            
+        </aside>
+        </div>
     <div class="wrapper">
         <form class="form" id="formGenero">
             <h1>Géneros musicales</h1>
@@ -60,7 +75,27 @@
     color: #ffffff;
     margin: 0;
 }
+.menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: auto;
+        height: 100%;
+        background-color: #282828;
+        overflow-y: auto;
+    }
 
+    .menu a {
+        display: block;
+        padding: 10px;
+        color: white;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .container {
+        margin-left: 210px;
+    }
 .wrapper {
     position: relative;
     width: 400px;

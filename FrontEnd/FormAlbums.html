@@ -3,103 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Álbumes</title>
+    <title>Álbumes</title>  
 </head>
 <body>
+    <div class="container">
+        <aside>
+            <div class="menu">
+                <a class="active" href="./index.html"><span><img src="img/home.svg" alt=""></span>Inicio</a>
+                <a href="#"><span><img src="img/search.svg" alt=""></span>Buscar</a>
+                <a href="#"><span><img src="img/library.svg" alt=""></span>Tu biblioteca</a> <br>
+                <a href="./FormAlbums.html"><span><img src="./img/add.svg" alt=""></span>Albunes</a>
+                <a href="./FormBandas.html"><span><img src="./img/add.svg" alt=""></span>Bandas</a>
+                <a href="./FormGenero.html"><span><img src="./img/add.svg" alt=""></span>Generos</a>
+                <a href="./FormConciertos.html"><span><img src="./img/add.svg" alt=""></span>Conciertos</a>
+                <a href="./Dashboard.html"><span><img src="./img/heart.svg" alt=""></span>Dashboaard</a>
+            </div>
+        </aside>
+    </div>
     <button onclick="crearAlbum()">Crear Álbum</button>
 
-    <table id="tablaAlbums">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Banda</th>
-                <th>Fecha de lanzamiento</th>
-                <th>Lugar</th>
-                <th>Duración</th>
-                <th>Copias vendidas</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Los álbumes se cargarán aquí -->
-        </tbody>
-    </table>
+    <div id="albumes" style="display: flex; flex-wrap: wrap;">
+        
+        <div class="album-card">
+            <div class="album-name">Nombre del álbum</div>
+        </div>
+    </div>
+
+    <div id="detalleAlbumModal" class="modal">
+        <div class="modal-content">
+            <span id="modalClose" class="close">&times;</span>
+            <!-- datos de la tabla -->
+        </div>
+    </div>
 
     <script>
-        async function cargarAlbums() {
-            try {
-                const responseAlbums = await fetch('http://127.0.0.1:8000/api/albums');
-                const albums = await responseAlbums.json();
-                
-                const responseBandas = await fetch('http://127.0.0.1:8000/api/bands');
-                const bandas = await responseBandas.json();
+        
+        var modal = document.getElementById("detalleAlbumModal");
 
-                const tabla = document.getElementById('tablaAlbums').getElementsByTagName('tbody')[0];
-                tabla.innerHTML = ""; // Limpiar la tabla antes de agregar los datos
+        
+        var span = document.getElementById("modalClose");
 
-                albums.forEach(album => {
-                    const banda = bandas.find(b => b.id === album.band_id);
+       
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+        window.onclick = function(event) {
+            if (event.target == modal) { modal.style.display = "none"; }
+        }
 
-                    const fila = tabla.insertRow();
-                    fila.dataset.id = album.id; // Almacenar el ID del álbum en el atributo de datos de la fila
-
-                    const celdaId = fila.insertCell(0);
-                    const celdaNombre = fila.insertCell(1);
-                    celdaNombre.dataset.id = album.id; // Almacenar el ID del álbum en el atributo de datos de la celda
-                    const celdaBanda = fila.insertCell(2);
-                    const celdaFechaLanzamiento = fila.insertCell(3);
-                    const celdaLugar = fila.insertCell(4);
-                    const celdaDuracion = fila.insertCell(5);
-                    const celdaCopiasVendidas = fila.insertCell(6);
-                    const celdaAcciones = fila.insertCell(7);
-
-                    celdaId.innerHTML = album.id;
-                    celdaNombre.innerHTML = album.name;
-                    celdaBanda.innerHTML = banda ? banda.name : "No definido";
-                    celdaFechaLanzamiento.innerHTML = album.release_date;
-                    celdaLugar.innerHTML = album.place;
-                    celdaDuracion.innerHTML = album.duration;
-                    celdaCopiasVendidas.innerHTML = album.copies_sold;
-
-                    celdaAcciones.innerHTML = `
-                        <button onclick="editarAlbum(event)">Editar</button>
-                        <button onclick="eliminarAlbum(event)">Eliminar</button>
-                    `;
-                });
-            } catch (error) {
-                console.error('Error al cargar álbumes:', error);
+        var albumActual;
+        var bandas; 
+       
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
             }
         }
 
-        function editarAlbum(event) {
-            const id = event.target.parentElement.parentElement.dataset.id;
-            const celdaNombre = event.target.parentElement.previousElementSibling;
+        async function cargarAlbums() {
+    try {
+        const responseAlbums = await fetch('http://127.0.0.1:8000/api/albums');
+        const albums = await responseAlbums.json();
 
-            const nuevoNombre = prompt("Ingrese el nuevo nombre del álbum:");
-            if (nuevoNombre !== null) {
-                fetch(`http://127.0.0.1:8000/api/albums/${id}`, {
+        const responseBandas = await fetch('http://127.0.0.1:8000/api/bands');
+        const bandas = await responseBandas.json();
+
+        const albumesDiv = document.getElementById('albumes');
+        albumesDiv.innerHTML = ""; 
+
+        for (const album of albums) {
+            const banda = bandas.find(b => b.id === album.band_id);
+            const albumResponse = await fetch(`http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=369b755c2fb040df8114f2a47d2ac1fd&artist=${banda.name}&album=${album.name}&format=json`);
+            const albumData = await albumResponse.json();
+
+            let imgURL = '';
+            if (albumData.album && albumData.album.image) {
+                const imgData = albumData.album.image.find(img => img.size === "mega");
+                imgURL = imgData ? imgData["#text"] : '';
+            }
+
+            const albumCard = document.createElement('div');
+            albumCard.classList.add('album-card');
+            albumCard.onclick = () => mostrarDetallesAlbum(album, banda);
+
+            const albumName = document.createElement('div');
+            albumName.classList.add('album-name');
+            albumName.textContent = album.name;
+            albumCard.appendChild(albumName);
+
+            if (imgURL !== '') {
+                albumCard.style.backgroundImage = `url(${imgURL})`; 
+                albumCard.style.backgroundSize = 'cover';  
+            } else {
+                albumCard.style.backgroundColor = '#0B2161';
+            }
+
+            albumesDiv.appendChild(albumCard);
+        }
+    } catch (error) {
+        console.error('Error al cargar álbumes:', error);
+    }
+}
+
+
+
+
+        function mostrarDetallesAlbum(album, banda) {
+            albumActual = album;
+            const modalContent = modal.getElementsByClassName('modal-content')[0];
+            modalContent.innerHTML = `
+                <span id="modalClose" class="close">&times;</span>
+                <h2><input type="text" id="nombreAlbum" value="${album.name}" readonly></h2>
+                <p>Banda: <span id="nombreBanda">${banda ? banda.name : "No definido"}</span></p>
+                <p>Fecha de lanzamiento: <input type="date" id="fechaLanzamiento" value="${album.release_date}" readonly></p>
+                <p>Lugar: <input type="text" id="lugar" value="${album.place}" readonly></p>
+                <p>Duración: <input type="text" id="duracion" value="${album.duration}" readonly></p>
+                <p>Copias vendidas: <input type="number" id="copiasVendidas" value="${album.copies_sold}" readonly></p>
+                <button id="btnEditar" onclick="editarAlbum()">Editar</button>
+                <button onclick="eliminarAlbum(${album.id})">Eliminar</button>
+            `;
+
+            modal.style.display = "block";
+            span = document.getElementById("modalClose");
+            span.onclick = function() { modal.style.display = "none"; }
+        }
+
+        function editarAlbum() {
+            const btnEditar = document.getElementById('btnEditar');
+            if (btnEditar.textContent === 'Editar') {
+                document.getElementById('nombreAlbum').readOnly = false;
+                document.getElementById('nombreBanda').disabled = false;
+                document.getElementById('fechaLanzamiento').readOnly = false;
+                document.getElementById('lugar').readOnly = false;
+                document.getElementById('duracion').readOnly = false;
+                document.getElementById('copiasVendidas').readOnly = false;
+                btnEditar.textContent = 'Guardar';
+            } else {
+                document.getElementById('nombreAlbum').readOnly = true;
+                document.getElementById('nombreBanda').disabled = true;
+                document.getElementById('fechaLanzamiento').readOnly = true;
+                document.getElementById('lugar').readOnly = true;
+                document.getElementById('duracion').readOnly = true;
+                document.getElementById('copiasVendidas').readOnly = true;
+                btnEditar.textContent = 'Editar';
+
+                
+                const albumActualizado = {
+                    name: document.getElementById('nombreAlbum').value,
+                    band_id: document.getElementById('nombreBanda').value,
+                    release_date: document.getElementById('fechaLanzamiento').value,
+                    place: document.getElementById('lugar').value,
+                    duration: document.getElementById('duracion').value,
+                    copies_sold: document.getElementById('copiasVendidas').value,
+                };
+                fetch(`http://127.0.0.1:8000/api/albums/${albumActual.id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: nuevoNombre })
-                }).then(() => {
-                    celdaNombre.innerHTML = nuevoNombre;
-                    // Actualiza también la banda en la tabla si es necesario
+                    body: JSON.stringify(albumActualizado)
                 }).catch(error => {
                     console.error('Error al editar el álbum:', error);
                 });
             }
         }
 
-        function eliminarAlbum(event) {
-            const id = event.target.parentElement.parentElement.dataset.id;
-            const fila = event.target.parentElement.parentElement;
 
+        function eliminarAlbum(id) {
             if (confirm("¿Está seguro de que desea eliminar este álbum?")) {
                 fetch(`http://127.0.0.1:8000/api/albums/${id}`, {
                     method: 'DELETE',
                 }).then(() => {
-                    fila.remove(); // Elimina la fila de la tabla
+                    cargarAlbums();  
                 }).catch(error => {
                     console.error('Error al eliminar el álbum:', error);
                 });
@@ -107,12 +180,151 @@
         }
 
         function crearAlbum() {
-            // Redirigir al usuario a la página del formulario para crear un álbum
-            window.location.href = './Albums.html'; // Cambia esta URL a la página de creación de álbumes
+            window.location.href = './Albums.html';
         }
 
-        // Llamar a la función cuando se carga el documento
         document.addEventListener("DOMContentLoaded", cargarAlbums);
     </script>
 </body>
 </html>
+<style>
+    :root{
+        --padding: 10px 20px;
+        --radius: 10px;
+        --fondo: #181818;
+        --efecto: all .5s;
+    }
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body{
+        display: flex;
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--fondo);
+    }
+    .container {
+    margin-left: 200px;
+}
+
+
+    .menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 200px;
+        height: 100%;
+        background-color: #282828;
+        overflow-y: auto;
+    }
+
+    .menu a {
+        display: block;
+        padding: 10px;
+        color: white;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .wrapper, .modal-content {
+        max-width: 800px;
+        margin: auto;
+        padding: 30px;
+        background-color: #282828;
+        border-radius: var(--radius);
+        box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+    }
+    h1, h2 {
+        color: white;
+    }
+    input[type="text"], input[type="date"], input[type="number"], select {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: none;
+        border-radius: var(--radius);
+        background-color: #333333;
+        color: white;
+        transition: var(--efecto);
+    }
+    input[type="text"]:focus, input[type="date"]:focus, input[type="number"]:focus {
+        outline: none;
+        box-shadow: 0px 0px 5px rgba(255,255,255,0.5);
+    }
+    .buttons, .album-card {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+    button {
+        padding: var(--padding);
+        border: none;
+        background-color: #505053;
+        color: white;
+        cursor: pointer;
+        border-radius: var(--radius);
+        transition: var(--efecto);
+    }
+    button:hover {
+        background-color: #797979;
+    }
+    button.delete {
+        background-color: #ff0000;
+    }
+    button.delete:hover {
+        background-color: #ff4f4f;
+    }
+    .shadow {
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.1));
+    }
+    .modal {
+        display: none; 
+        position: fixed; 
+        z-index: 1; 
+        padding-top: 100px; 
+        left: 0;
+        top: 0;
+        width: 100%; 
+        height: 100%;
+        overflow: auto; 
+        background-color: rgba(0,0,0,0.4); 
+    }
+    .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .album-card {
+        border: 1px solid #333;
+        padding: var(--padding);
+        margin: 10px;
+        cursor: pointer;
+        width: 200px;
+        height: 200px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        background-color: #333; 
+        transition: var(--efecto);
+    }
+    .album-card:hover {
+        background-color: #797979; 
+        }
+        .album-name {
+        font-size: 20px; /* Cambia esto según el tamaño que desees */
+        color: white;
+    }
+</style>

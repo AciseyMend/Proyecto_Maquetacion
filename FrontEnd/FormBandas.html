@@ -6,6 +6,21 @@
     <title>Bandas</title>
 </head>
 <body>
+    <div class="container">
+        <aside>
+            <div class="menu">
+                <a class="active" href="./index.html"><span><img src="img/home.svg" alt=""></span>Inicio</a>
+                <a href="#"><span><img src="img/search.svg" alt=""></span>Buscar</a>
+                <a href="#"><span><img src="img/library.svg" alt=""></span>Tu biblioteca</a> <br>
+                <a href="./FormAlbums.html"><span><img src="img/add.svg" alt=""></span>Albunes</a>
+                <a href="./FormBandas.html"><span><img src="img/add.svg" alt=""></span>Bandas</a>
+                <a href="./FormGenero.html"><span><img src="img/add.svg" alt=""></span>Generos</a>
+                <a href="./FormConciertos.html"><span><img src="img/add.svg" alt=""></span>Conciertos</a>
+                <a href="./Dashboard.html"><span><img src="img/heart.svg" alt=""></span>Dashboaard</a>
+            </div>
+            
+        </aside>
+        </div>
     <button onclick="crearBanda()">Crear Banda</button>
 
     <table id="tablaBandas">
@@ -105,3 +120,112 @@
     </script>
 </body>
 </html>
+<style>
+    :root{
+        --padding: 10px 20px;
+        --radius: 10px;
+        --fondo: #181818;
+        --efecto: all .5s;
+    }
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body{
+        display: flex;
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--fondo);
+    }
+    .container {
+        margin-left: 200px;
+    }
+
+    .menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 200px;
+        height: 100%;
+        background-color: #282828;
+        overflow-y: auto;
+    }
+
+    .menu a {
+        display: block;
+        padding: 10px;
+        color: white;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .wrapper, .modal-content {
+        max-width: 800px;
+        margin: auto;
+        padding: 30px;
+        background-color: #282828;
+        border-radius: var(--radius);
+        box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+    }
+    h1, h2 {
+        color: white;
+    }
+    input[type="text"], input[type="date"], input[type="number"], select {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: none;
+        border-radius: var(--radius);
+        background-color: #333333;
+        color: white;
+        transition: var(--efecto);
+    }
+    input[type="text"]:focus, input[type="date"]:focus, input[type="number"]:focus {
+        outline: none;
+        box-shadow: 0px 0px 5px rgba(255,255,255,0.5);
+    }
+    .buttons, .album-card {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+    button {
+        padding: var(--padding);
+        border: none;
+        background-color: #505053;
+        color: white;
+        cursor: pointer;
+        border-radius: var(--radius);
+        transition: var(--efecto);
+    }
+    button:hover {
+        background-color: #797979;
+    }
+    
+   
+    #tablaBandas {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        color: white;
+    }
+
+    #tablaBandas th,
+    #tablaBandas td {
+        padding: 10px;
+        border: 1px solid #333333;
+        text-align: left;
+        transition: var(--efecto);
+    }
+
+    #tablaBandas th {
+        background-color: #282828;
+    }
+
+    #tablaBandas tbody tr:hover {
+        background-color: #505053;
+    }
+
+</style>

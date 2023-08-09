@@ -4,10 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conciertos</title>
-    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    
     <div class="container">
+        <div class="container">
+            <aside>
+                <div class="menu">
+                    <a class="active" href="./index.html"><span><img src="img/home.svg" alt=""></span>Inicio</a>
+                    <a href="#"><span><img src="img/search.svg" alt=""></span>Buscar</a>
+                    <a href="#"><span><img src="img/library.svg" alt=""></span>Tu biblioteca</a> <br>
+                    <a href="./FormAlbums.html"><span><img src="img/add.svg" alt=""></span>Albunes</a>
+                    <a href="./FormBandas.html"><span><img src="img/add.svg" alt=""></span>Bandas</a>
+                    <a href="./FormGenero.html"><span><img src="img/add.svg" alt=""></span>Generos</a>
+                    <a href="./FormConciertos.html"><span><img src="img/add.svg" alt=""></span>Conciertos</a>
+                    <a href="./Dashboard.html"><span><img src="img/heart.svg" alt=""></span>Dashboaard</a>
+                </div>
+                
+            </aside>
+            </div>
         <section>
             <header class="botones_prev_next">
                 <span onclick="crearConcierto()" class="btn_prev">Crear Concierto</span>
@@ -117,3 +132,96 @@
     </script>
 </body>
 </html>
+<style>
+    :root {
+        --padding: 10px 20px;
+        --radius: 10px;
+        --fondo: #181818;
+        --efecto: all .5s;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        display: flex;
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--fondo);
+        color: #ffffff;
+    }
+
+    .container {
+        margin-left: 200px;
+        padding: 20px;
+        overflow-x: auto;
+    }
+
+    aside {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 200px;
+        height: 100%;
+        background-color: #282828;
+        overflow-y: auto;
+    }
+
+    .menu a {
+        display: block;
+        padding: 10px;
+        color: white;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    button, .btn_prev {
+        padding: var(--padding);
+        border: none;
+        background-color: #505053;
+        color: white;
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: var(--efecto);
+    }
+
+    button:hover, .btn_prev:hover {
+        background-color: #797979;
+    }
+
+    table, .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td, .table th, .table td {
+        padding: 10px;
+        border: 1px solid #505053;
+        text-align: left;
+    }
+
+    th, .table th {
+        background-color: #282828;
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #333333;
+    }
+
+    tbody tr:hover {
+        background-color: #505053;
+    }
+
+    .botones_prev_next {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 10px;
+    }
+
+    h1, h2 {
+        color: white;
+    }
+</style>

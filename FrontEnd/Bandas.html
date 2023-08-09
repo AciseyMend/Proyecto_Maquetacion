@@ -4,9 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bandas musicales</title>
-  <!-- ... Resto del código ... -->
+ 
 </head>
-<body class="contactBody">   
+<body class="contactBody">
+    <div class="container">
+        <aside>
+            <div class="menu">
+                <a class="active" href="./index.html"><span><img src="img/home.svg" alt=""></span>Inicio</a>
+                <a href="#"><span><img src="img/search.svg" alt=""></span>Buscar</a>
+                <a href="#"><span><img src="img/library.svg" alt=""></span>Tu biblioteca</a> <br>
+                <a href="./FormAlbums.html"><span><img src="img/add.svg" alt=""></span>Albunes</a>
+                <a href="./FormBandas.html"><span><img src="img/add.svg" alt=""></span>Bandas</a>
+                <a href="./FormGenero.html"><span><img src="img/add.svg" alt=""></span>Generos</a>
+                <a href="./FormConciertos.html"><span><img src="img/add.svg" alt=""></span>Conciertos</a>
+                <a href="./Dashboard.html"><span><img src="img/heart.svg" alt=""></span>Dashboaard</a>
+            </div>
+            
+        </aside>
+        </div>   
     <div class="wrapper">
         <form class="form" id="formBanda">
             <h1>Bandas musicales</h1>
@@ -14,7 +29,7 @@
             <input type="text" class="name" id="inputBanda" placeholder="Nombre de la banda"/>
             <h2>Género musical:</h2>
             <select id="selectGenero">
-                <!-- Las opciones de géneros se cargarán aquí -->
+                <!-- Los géneros visualizan aquí -->
             </select>
             <div class="buttons">
                 <button type="button" class="submit entry" onclick="guardarBanda()">Guardar</button>
@@ -59,7 +74,7 @@
                 alert('Banda creada exitosamente!');
                 document.getElementById('inputBanda').value = '';
                 document.getElementById('selectGenero').value = ''; // Limpiar el select
-                // Puedes redirigir a la página que desees aquí
+               
             })
             .catch(error => {
                 alert('Error al crear banda.');
@@ -77,3 +92,156 @@
     </script>
 </body>
 </html>
+<style>
+    :root{
+    --padding: 10px 20px;
+    --radius: 10px;
+    --fondo: #181818;
+    --efecto: all .5s;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    display: flex;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--fondo);
+}
+
+.menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 100%;
+    background-color: #282828;
+    overflow-y: auto;
+}
+
+.menu a {
+    display: block;
+    padding: 10px;
+    color: white;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.container, .wrapper {
+    margin-left: 210px;
+}
+
+.wrapper, .modal-content {
+    max-width: 800px;
+    margin: auto;
+    padding: 30px;
+    background-color: #282828;
+    border-radius: var(--radius);
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+}
+
+h1, h2 {
+    color: white;
+}
+
+input[type="text"], input[type="date"], input[type="number"], select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: var(--radius);
+    background-color: #333333;
+    color: white;
+    transition: var(--efecto);
+}
+
+input[type="text"]:focus, input[type="date"]:focus, input[type="number"]:focus {
+    outline: none;
+    box-shadow: 0px 0px 5px rgba(255,255,255,0.5);
+}
+
+.buttons, .album-card {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+button {
+    padding: var(--padding);
+    border: none;
+    background-color: #505053;
+    color: white;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: var(--efecto);
+}
+
+button:hover {
+    background-color: #797979;
+}
+
+button.delete {
+    background-color: #ff0000;
+}
+
+button.delete:hover {
+    background-color: #ff4f4f;
+}
+
+.shadow {
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.1));
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.album-card {
+    border: 1px solid #333;
+    padding: var(--padding);
+    margin: 10px;
+    cursor: pointer;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: #333;
+    transition: var(--efecto);
+}
+
+.album-card:hover {
+    background-color: #797979;
+}
+
+</style>
