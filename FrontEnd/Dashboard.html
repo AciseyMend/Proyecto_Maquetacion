@@ -157,13 +157,14 @@
         }
     
         function consultarBandasPorPais() {
-            const url = 'http://127.0.0.1:8000/api/bands'; 
+            //CONCIERTOS Y BANDAS CON EL ID_BAND
+            const url = 'http://127.0.0.1:8000/api/concerts'; 
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     const countries = {};
                     data.forEach(item => {
-                        const country = item.country;
+                        const country = item.place;
                         if (countries[country]) {
                             countries[country]++;
                         } else {
@@ -217,69 +218,80 @@
         }
     
         function consultarConciertosPorLugar() {
-            const url = 'http://127.0.0.1:8000/api/concerts'; 
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    const locationNames = data.map(item => item.location);
-                    const concertCounts = data.map(item => item.concerts_count);
-                    const trace = {
-                        x: locationNames,
-                        y: concertCounts,
-                        type: 'bar',
-                        marker: { color: 'purple' },
-                    };
-                    const layout = {
-                        title: 'Conciertos por lugar',
-                        xaxis: { title: 'Lugar' },
-                        yaxis: { title: 'Cantidad de Conciertos' },
-                    };
-                    Plotly.newPlot('concertsByLocationChart', [trace], layout);
-                })
-                .catch(error => {
-                    console.error('Hubo un error al obtener los datos:', error);
-                });
-        }
+    const url = 'http://127.0.0.1:8000/api/concerts'; 
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const concertsByLocation = data.reduce((acc, concert) => {
+                acc[concert.place] = (acc[concert.place] || 0) + 1;
+                return acc;
+            }, {});
+
+            const locationNames = Object.keys(concertsByLocation);
+            const concertCounts = Object.values(concertsByLocation);
+
+            const trace = {
+                x: locationNames,
+                y: concertCounts,
+                type: 'bar',
+                marker: { color: 'purple' },
+            };
+            const layout = {
+                title: 'Conciertos por lugar',
+                xaxis: { title: 'Lugar' },
+                yaxis: { title: 'Cantidad de Conciertos' },
+            };
+
+            Plotly.newPlot('concertsByLocationChart', [trace], layout);
+        })
+        .catch(error => {
+            console.error('Hubo un error al obtener los datos:', error);
+        });
+}
+
     
-        function consultarAlbumesPorDecada() {
-            const url = 'http://127.0.0.1:8000/api/albums'; 
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    const albumNames = data.map(item => item.name);
-                    const decades = ['70’s', '80’s', '90’s', '00’s', '10’s']; 
-                    const albumsByDecade = new Array(5).fill(0);
-                    data.forEach(item => {
-                        const releaseYear = item.release_year;
-                        if (releaseYear >= 1970 && releaseYear < 1980) {
-                            albumsByDecade[0]++;
-                        } else if (releaseYear >= 1980 && releaseYear < 1990) {
-                            albumsByDecade[1]++;
-                        } else if (releaseYear >= 1990 && releaseYear < 2000) {
-                            albumsByDecade[2]++;
-                        } else if (releaseYear >= 2000 && releaseYear < 2010) {
-                            albumsByDecade[3]++;
-                        } else if (releaseYear >= 2010 && releaseYear < 2020) {
-                            albumsByDecade[4]++;
-                        }
-                    });
-                    const trace = {
-                        x: decades,
-                        y: albumsByDecade,
-                        type: 'bar',
-                        marker: { color: 'pink' },
-                    };
-                    const layout = {
-                        title: 'Álbumes por décadas',
-                        xaxis: { title: 'Década' },
-                        yaxis: { title: 'Cantidad de Álbumes' },
-                    };
-                    Plotly.newPlot('albumsByDecadesChart', [trace], layout);
-                })
-                .catch(error => {
-                    console.error('Hubo un error al obtener los datos:', error);
-                });
-        }
+function consultarAlbumesPorDecada() {
+    const url = 'http://127.0.0.1:8000/api/albums';
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Data:', data); // Verifica la estructura de los datos
+
+            const decades = ['70’s', '80’s', '90’s', '00’s', '10’s'];
+            const albumsByDecade = new Array(5).fill(0);
+
+            data.forEach(item => {
+                const releaseYear = parseInt(item.release_date); // Asegúrate de que es un número
+
+                if (releaseYear >= 1970 && releaseYear < 1980) albumsByDecade[0]++;
+                else if (releaseYear >= 1980 && releaseYear < 1990) albumsByDecade[1]++;
+                else if (releaseYear >= 1990 && releaseYear < 2000) albumsByDecade[2]++;
+                else if (releaseYear >= 2000 && releaseYear < 2010) albumsByDecade[3]++;
+                else if (releaseYear >= 2010 && releaseYear < 2020) albumsByDecade[4]++;
+            });
+
+            console.log('Albums by decade:', albumsByDecade); // Verifica los recuentos por década
+
+            const trace = {
+                x: decades,
+                y: albumsByDecade,
+                type: 'bar',
+                marker: { color: 'pink' },
+            };
+
+            const layout = {
+                title: 'Álbumes por décadas',
+                xaxis: { title: 'Década' },
+                yaxis: { title: 'Cantidad de Álbumes' },
+            };
+
+            Plotly.newPlot('albumsByDecadesChart', [trace], layout);
+        })
+        .catch(error => {
+            console.error('Hubo un error al obtener los datos:', error);
+        });
+}
+
     </script>
 </body>
 </html>
